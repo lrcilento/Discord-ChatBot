@@ -28,7 +28,9 @@ async def on_ready():
 async def on_message(message):
     if message.author != client.user:
         if message.channel.id in channels or 0 in channels:
-            await message.channel.send(chatbot.get_response(message.content))
+            output = chatbot.get_response(message.content)
+            await message.channel.send(output)
+            chatbot.get_response(output)
         elif message.content == "mekgorod" or message.content == "Mekgorod":
             await message.channel.send("Quem ousa?")
             channels.append(0)
