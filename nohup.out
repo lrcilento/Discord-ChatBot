@@ -1,0 +1,49 @@
+[nltk_data] Downloading package stopwords to
+[nltk_data]     /home/lrcilento/nltk_data...
+[nltk_data]   Package stopwords is already up-to-date!
+[nltk_data] Downloading package averaged_perceptron_tagger to
+[nltk_data]     /home/lrcilento/nltk_data...
+[nltk_data]   Package averaged_perceptron_tagger is already up-to-
+[nltk_data]       date!
+INFO:discord.client:logging in using static token
+INFO:discord.gateway:Shard ID None has sent the IDENTIFY payload.
+INFO:discord.gateway:Shard ID None has connected to Gateway: ["gateway-prd-main-7hm7",{"micros":106145,"calls":["discord-sessions-prd-2-89",{"micros":105152,"calls":["start_session",{"micros":83277,"calls":["api-prd-main-0snn",{"micros":80121,"calls":["get_user",{"micros":12076},"add_authorized_ip",{"micros":5653},"get_guilds",{"micros":10581},"coros_wait",{"micros":1}]}]},"guilds_connect",{"micros":1,"calls":[]},"presence_connect",{"micros":7924,"calls":[]}]}]}] (Session ID: 35ad2ea9fb96c2bdafc92c7fa056dd4b).
+INFO:chatterbot.chatterbot:Beginning search for close text match
+INFO:chatterbot.chatterbot:Processing search results
+INFO:chatterbot.chatterbot:Using "Oi" as a close match to "Oi" with a confidence of 0
+INFO:chatterbot.chatterbot:No responses found. Generating alternate response list.
+INFO:chatterbot.chatterbot:No known response to the input was found. Selecting a random response.
+INFO:chatterbot.chatterbot:BestMatch selected "Oi" as a response with a confidence of 0
+INFO:chatterbot.chatterbot:Adding "Oi" as a response to "None"
+INFO:chatterbot.chatterbot:Beginning search for close text match
+INFO:chatterbot.chatterbot:Processing search results
+INFO:chatterbot.chatterbot:Using "Tudo bem?" as a close match to "Tudo bem?" with a confidence of 0
+INFO:chatterbot.chatterbot:No responses found. Generating alternate response list.
+INFO:chatterbot.chatterbot:No known response to the input was found. Selecting a random response.
+INFO:chatterbot.chatterbot:BestMatch selected "Oi" as a response with a confidence of 0
+INFO:chatterbot.chatterbot:Adding "Tudo bem?" as a response to "Oi"
+INFO:chatterbot.chatterbot:Beginning search for close text match
+INFO:chatterbot.chatterbot:Processing search results
+INFO:chatterbot.chatterbot:Using "Qual seu nome?" as a close match to "Qual seu nome?" with a confidence of 0
+INFO:chatterbot.chatterbot:0. Excluding recent repeated response of "Oi"
+INFO:chatterbot.chatterbot:No responses found. Generating alternate response list.
+INFO:chatterbot.chatterbot:No known response to the input was found. Selecting a random response.
+INFO:chatterbot.chatterbot:BestMatch selected "Tudo bem?" as a response with a confidence of 0
+INFO:chatterbot.chatterbot:Adding "Qual seu nome?" as a response to "Tudo bem?"
+INFO:chatterbot.chatterbot:Beginning search for close text match
+INFO:chatterbot.chatterbot:Processing search results
+INFO:chatterbot.chatterbot:Using "Realmente o bot mais burro do mundo" as a close match to "Realmente o bot mais burro do mundo" with a confidence of 0
+INFO:chatterbot.chatterbot:0. Excluding recent repeated response of "Oi"
+INFO:chatterbot.chatterbot:No responses found. Generating alternate response list.
+INFO:chatterbot.chatterbot:No known response to the input was found. Selecting a random response.
+INFO:chatterbot.chatterbot:BestMatch selected "Tudo bem?" as a response with a confidence of 0
+INFO:chatterbot.chatterbot:Adding "Realmente o bot mais burro do mundo" as a response to "Qual seu nome?"
+INFO:chatterbot.chatterbot:Beginning search for close text match
+INFO:chatterbot.chatterbot:Processing search results
+INFO:chatterbot.chatterbot:Using "😋" as a close match to "😋" with a confidence of 0
+INFO:chatterbot.chatterbot:0. Excluding recent repeated response of "Oi"
+INFO:chatterbot.chatterbot:1. Excluding recent repeated response of "Tudo bem?"
+INFO:chatterbot.chatterbot:No responses found. Generating alternate response list.
+INFO:chatterbot.chatterbot:No known response to the input was found. Selecting a random response.
+INFO:chatterbot.chatterbot:BestMatch selected "Oi" as a response with a confidence of 0
+INFO:chatterbot.chatterbot:Adding "😋" as a response to "Realmente o bot mais burro do mundo"
