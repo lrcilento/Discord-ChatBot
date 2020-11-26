@@ -28,9 +28,8 @@ async def on_ready():
 async def on_message(message):
     if message.author != client.user:
         if message.channel.id in channels or 0 in channels:
-            output = chatbot.get_response(message.content)
-            await message.channel.send(output)
-            chatbot.get_response(output)
+            await message.channel.send(chatbot.get_response(message.content))
+
         elif message.content == "mekgorod" or message.content == "Mekgorod":
             await message.channel.send("Quem ousa?")
             channels.append(0)
@@ -38,7 +37,7 @@ async def on_message(message):
             channels.pop()
             await message.channel.send("Não me pertube mais.")
 
-        else:
-            chatbot.get_response(message.content)
+    else:
+        chatbot.get_response(message.content)
 
 client.run(token)
