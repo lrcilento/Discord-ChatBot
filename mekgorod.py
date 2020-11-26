@@ -22,11 +22,14 @@ chatbot = ChatBot(
 
 @client.event
 async def on_ready():
+    
     print('Mekgorod Summoned!')    
 
 @client.event
 async def on_message(message):
+
     if message.author != client.user:
+
         if message.channel.id in channels or 0 in channels:
             await message.channel.send(chatbot.get_response(message.content))
 
@@ -37,7 +40,7 @@ async def on_message(message):
             channels.pop()
             await message.channel.send("Não me pertube mais.")
 
-    else:
-        chatbot.get_response(message.content)
+        else:
+            chatbot.get_response(message.content)
 
 client.run(token)
