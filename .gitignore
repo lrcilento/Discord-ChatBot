@@ -1,2 +1,4 @@
 __pycache__/credentials.cpython-38.pyc
 credentials.py
+nohup.out
+sentence_tokenizer.pickle
