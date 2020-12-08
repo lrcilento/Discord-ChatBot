@@ -1,6 +1,6 @@
 import logging
 from chatterbot import ChatBot
-from chatterbot.trainers import ChatterBotCorpusTrainer
+from chatterbot.trainers import ListTrainer
 from credentials import db
 
 logging.basicConfig(level=logging.INFO)
@@ -14,8 +14,10 @@ chatbot = ChatBot(
     filters=["filters.get_recent_repeated_responses"]
 )
 
-trainer = ChatterBotCorpusTrainer(chatbot)
+trainer = ListTrainer(chatbot)
 
-trainer.train(
-    "chatterbot.corpus.portuguese.compliment"
+trainer.train([
+    "sim",
+    "Sim o que, bro?"
+]
 )
