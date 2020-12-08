@@ -44,12 +44,8 @@ async def on_message(message):
             channels.pop()
             await message.channel.send("Não me pertube mais.")
 
-@client.event
-async def on_message(message):
+    if message.author != client.user and message.content == "mekgorod, me avisa quando o servidor abrir":
 
-    if message.author != client.user:
-
-        if message.content == "mekgorod, me avisa quando o servidor abrir":
             status = 'Online'
             binary = FirefoxBinary('/usr/lib/firefox/firefox')
             fireFoxOptions = webdriver.FirefoxOptions()
@@ -58,22 +54,17 @@ async def on_message(message):
             driver.get(realmstatusurl)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             realms = soup.find_all("div", {'class': 'SortTable-row'})
+            
             for realm in realms:
                 if 'Azralon' in str(realm):
                     if 'Offline' in str(realm):
                         status = 'Offline'
-                        print('Offline, aguardando')
+                        await message.channel.send("Pode deixar, mano.")
                     else:
                         await message.channel.send("Como assim, mano? O server tá aberto.")
             
             while(status == 'Offline'):
-                print('Checando novamente! 5 minutos')
-                await asyncio.sleep(5)
-                print('Checando novamente!')
-                binary = FirefoxBinary('/usr/lib/firefox/firefox')
-                fireFoxOptions = webdriver.FirefoxOptions()
-                fireFoxOptions.set_headless()
-                driver = webdriver.Firefox(firefox_binary=binary, firefox_options=fireFoxOptions)
+                await asyncio.sleep(300)
                 driver.get(realmstatusurl)
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
                 realms = soup.find_all("div", {'class': 'SortTable-row'})
@@ -82,5 +73,7 @@ async def on_message(message):
                         if 'Online' in str(realm):
                             status = 'Online'
                             await message.author.send("Abriu, mano.")
+
+            driver.close()
 
 client.run(token)
