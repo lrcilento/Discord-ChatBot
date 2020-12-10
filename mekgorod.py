@@ -51,7 +51,6 @@ async def on_message(message):
             realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
             if 'UP' in str(realm):
                 await message.channel.send("Como assim, mano? O server tá aberto.")
-                status = 'Offline'
             else:
                 status = 'Offline'
                 await message.channel.send("Pode deixar, mano.")
