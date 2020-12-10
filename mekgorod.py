@@ -2,16 +2,16 @@ import logging
 import asyncio
 import os
 import discord
-from selenium import webdriver
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from wowapi import WowApi
 from bs4 import BeautifulSoup
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
-from credentials import db, token
+from credentials import db, token, bnet_cid, bnet_secret
 
 client = discord.Client()
 channels = [781422176472924160]
 realmstatusurl = "https://worldofwarcraft.com/en-us/game/status/us"
+realmID = 3209
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,7 +37,7 @@ async def on_message(message):
         if message.channel.id in channels or 0 in channels:
             await message.channel.send(chatbot.get_response(message.content))
 
-        elif message.content == "mekgorod" or message.content == "Mekgorod":
+        elif "mekgorod" or "Mekgorod" in message.content:
             await message.channel.send("Quem ousa?")
             channels.append(0)
             await asyncio.sleep(60)
@@ -47,33 +47,21 @@ async def on_message(message):
     if message.author != client.user and message.content == "mekgorod, me avisa quando o servidor abrir":
 
             status = 'Online'
-            binary = FirefoxBinary('/usr/lib/firefox/firefox')
-            fireFoxOptions = webdriver.FirefoxOptions()
-            fireFoxOptions.set_headless()
-            driver = webdriver.Firefox(firefox_binary=binary, firefox_options=fireFoxOptions)
-            driver.get(realmstatusurl)
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-            realms = soup.find_all("div", {'class': 'SortTable-row'})
-            
-            for realm in realms:
-                if 'Azralon' in str(realm):
-                    if 'Offline' in str(realm):
-                        status = 'Offline'
-                        await message.channel.send("Pode deixar, mano.")
-                    else:
-                        await message.channel.send("Como assim, mano? O server tá aberto.")
+            api = WowApi(bnet_cid, bnet_secret)
+            realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
+            if 'UP' in str(realm):
+                await message.channel.send("Como assim, mano? O server tá aberto.")
+                status = 'Offline'
+            else:
+                status = 'Offline'
+                await message.channel.send("Pode deixar, mano.")
             
             while(status == 'Offline'):
-                await asyncio.sleep(300)
-                driver.get(realmstatusurl)
-                soup = BeautifulSoup(driver.page_source, 'html.parser')
-                realms = soup.find_all("div", {'class': 'SortTable-row'})
-                for realm in realms:
-                    if 'Azralon' in str(realm):
-                        if 'Online' in str(realm):
-                            status = 'Online'
-                            await message.author.send("Abriu, mano.")
-
-            driver.close()
+                await asyncio.sleep(60)
+                realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
+                if 'UP' in str(realm):
+                    print('OPEN')
+                    status = 'Online'
+                    await message.author.send("Abriu, mano.")
 
 client.run(token)
