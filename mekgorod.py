@@ -32,19 +32,19 @@ async def on_ready():
 @client.event
 async def on_message(message):
 
-    if message.author != client.user and message.content != "mekgorod, me avisa quando o servidor abrir":
+    if message.author != client.user and "servidor abrir" not in message.content and "servidor voltar" not in message.content:
 
         if message.channel.id in channels or 0 in channels:
             await message.channel.send(chatbot.get_response(message.content))
 
-        elif "mekgorod" or "Mekgorod" in message.content:
+        elif "mekgorod" in message.content or "Mekgorod" in message.content:
             await message.channel.send("Quem ousa?")
             channels.append(0)
             await asyncio.sleep(60)
             channels.pop()
             await message.channel.send("Não me pertube mais.")
 
-    if message.author != client.user and message.content == "mekgorod, me avisa quando o servidor abrir":
+    if message.author != client.user and ("servidor abrir" in message.content or "servidor voltar" in message.content):
 
             status = 'Online'
             api = WowApi(bnet_cid, bnet_secret)
