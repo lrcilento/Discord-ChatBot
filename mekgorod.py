@@ -8,7 +8,9 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from credentials import db, token, bnet_cid, bnet_secret
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.members = True
+client = discord.Client(intents=intents)
 channels = [781422176472924160]
 realmID = 3209
 
@@ -25,8 +27,22 @@ chatbot = ChatBot(
 
 @client.event
 async def on_ready():
-    
-    print('Mekgorod Summoned!')    
+    print('Mekgorod Summoned!')
+
+@client.event
+async def on_member_join(member):
+    await member.send("Seja bem-vindo à Dagon! Caso tenha sido convidado por um dos oficiais entre em qualquer sala que eles já vão te puxar.")
+
+@client.event
+async def on_member_remove(member):
+    await  client.get_channel(382859094123610113).send("O " + member.display_name + " viadinho acabou de sair do servidor.")
+
+@client.event
+async def on_member_update(before, after):
+    if ("778819742928601109" not in str(before.roles)) and ("778819742928601109" in str(after.roles)):
+        await after.send("Parabéns por ter sido aprovado na entrevista! Agora você é um dos trainees da Dagon! Não se esqueça de dar uma boa lida no #bem-vindo e muito boa sorte nas próximas etapas do processo!")
+    elif ("382855295552061440" not in str(before.roles)) and ("382855295552061440" in str(after.roles)):
+        await after.send("Opa! Aí sim! Agora você é um titular da Dagon, meus parabéns! Quando tiver um tempo vamos conversar um pouco, quem sabe assim um dia eu fico menos estúpido.")
 
 @client.event
 async def on_message(message):
