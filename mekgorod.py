@@ -69,18 +69,6 @@ async def on_member_update(before, after):
 @client.event
 async def on_message(message):
 
-    if message.author != client.user and "servidor abrir" not in message.content and "servidor voltar" not in message.content:
-
-        if message.channel.id in permitedChannels or 0 in permitedChannels:
-            await message.channel.send(chatbot.get_response(message.content))
-
-        elif "mekgorod" in message.content or "Mekgorod" in message.content:
-            await message.channel.send("Quem ousa?")
-            permitedChannels.append(0)
-            await asyncio.sleep(60)
-            permitedChannels.pop()
-            await message.channel.send("Não me pertube mais.")
-
     if message.author != client.user and ("servidor abrir" in message.content or "servidor voltar" in message.content):
 
             if "Online" in realmStatus:
@@ -88,5 +76,17 @@ async def on_message(message):
             else:
                 warnList.append(message.author)
                 await message.channel.send("Pode deixar, mano.")
+
+    elif message.author != client.user:
+
+        if message.channel.id in permitedChannels:
+            await message.channel.send(chatbot.get_response(message.content))
+
+        elif "mekgorod" in message.content or "Mekgorod" in message.content:
+            await message.channel.send("Quem ousa?")
+            permitedChannels.append(message.channel)
+            await asyncio.sleep(60)
+            permitedChannels.pop()
+            await message.channel.send("Não me pertube mais.")
 
 client.run(token)
