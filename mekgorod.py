@@ -10,7 +10,6 @@ from credentials import db, token, bnet_cid, bnet_secret
 
 client = discord.Client()
 channels = [781422176472924160]
-realmstatusurl = "https://worldofwarcraft.com/en-us/game/status/us"
 realmID = 3209
 
 logging.basicConfig(level=logging.INFO)

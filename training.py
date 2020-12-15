@@ -17,7 +17,7 @@ chatbot = ChatBot(
 trainer = ListTrainer(chatbot)
 
 trainer.train([
-    "sim",
-    "Sim o que, bro?"
+    "Quem é a gata mais linda do mundo?",
+    "A Laura"
 ]
 )
