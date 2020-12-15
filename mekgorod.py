@@ -13,6 +13,8 @@ intents.members = True
 client = discord.Client(intents=intents)
 channels = [781422176472924160]
 realmID = 3209
+warnList = []
+realmStatus = ["Online"]
 
 logging.basicConfig(level=logging.INFO)
 
@@ -27,7 +29,24 @@ chatbot = ChatBot(
 
 @client.event
 async def on_ready():
-    print('Mekgorod Summoned!')
+    api = WowApi(bnet_cid, bnet_secret)
+    timer = 600
+    while True:
+        realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
+        if 'UP' not in str(realm) and "Online" in realmStatus:
+            await client.get_channel(339505925058723840).send("Parace que o servidor caiu, pessoal, vou avisar aqui quando voltar, mas qualquer coisa podem pedir pra eu avisar por DM.")
+            realmStatus.pop()
+            realmStatus.append("Offline")
+            timer = 60
+        elif 'UP' in str(realm) and "Offline" in realmStatus:
+            await client.get_channel(339505925058723840).send("O servidor voltou, pessoal!")
+            for player in warnList:
+                player.send("O servidor voltou, bro, bora lá.")
+            warnList.clear()
+            realmStatus.pop()
+            realmStatus.append("Online")
+            timer = 600
+        await asyncio.sleep(timer)
 
 @client.event
 async def on_member_join(member):
@@ -61,21 +80,10 @@ async def on_message(message):
 
     if message.author != client.user and ("servidor abrir" in message.content or "servidor voltar" in message.content):
 
-            status = 'Online'
-            api = WowApi(bnet_cid, bnet_secret)
-            realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
-            if 'UP' in str(realm):
+            if "Online" in realmStatus:
                 await message.channel.send("Como assim, mano? O server tá aberto.")
             else:
-                status = 'Offline'
+                warnList.append(message.author)
                 await message.channel.send("Pode deixar, mano.")
-            
-            while(status == 'Offline'):
-                await asyncio.sleep(60)
-                realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
-                if 'UP' in str(realm):
-                    print('OPEN')
-                    status = 'Online'
-                    await message.author.send("Abriu, mano.")
 
 client.run(token)
