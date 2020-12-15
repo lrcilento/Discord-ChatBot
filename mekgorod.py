@@ -11,7 +11,9 @@ from credentials import db, token, bnet_cid, bnet_secret
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
-channels = [781422176472924160]
+permitedChannels = [781422176472924160]
+officerChannel = 382859094123610113
+announcementChannel = 339505925058723840
 realmID = 3209
 warnList = []
 realmStatus = ["Online"]
@@ -34,12 +36,12 @@ async def on_ready():
     while True:
         realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
         if 'UP' not in str(realm) and "Online" in realmStatus:
-            await client.get_channel(339505925058723840).send("Parace que o servidor caiu, pessoal, vou avisar aqui quando voltar, mas qualquer coisa podem pedir pra eu avisar por DM.")
+            await client.get_channel(announcementChannel).send("Parace que o servidor caiu, pessoal, vou avisar aqui quando voltar, mas qualquer coisa podem pedir pra eu avisar por DM.")
             realmStatus.pop()
             realmStatus.append("Offline")
             timer = 60
         elif 'UP' in str(realm) and "Offline" in realmStatus:
-            await client.get_channel(339505925058723840).send("O servidor voltou, pessoal!")
+            await client.get_channel(announcementChannel).send("O servidor voltou, pessoal!")
             for player in warnList:
                 player.send("O servidor voltou, bro, bora lá.")
             warnList.clear()
@@ -54,7 +56,7 @@ async def on_member_join(member):
 
 @client.event
 async def on_member_remove(member):
-    await  client.get_channel(382859094123610113).send("O " + member.display_name + " viadinho acabou de sair do servidor.")
+    await  client.get_channel(officerChannel).send("O " + member.display_name + " viadinho acabou de sair do servidor.")
 
 @client.event
 async def on_member_update(before, after):
@@ -68,14 +70,14 @@ async def on_message(message):
 
     if message.author != client.user and "servidor abrir" not in message.content and "servidor voltar" not in message.content:
 
-        if message.channel.id in channels or 0 in channels:
+        if message.channel.id in permitedChannels or 0 in permitedChannels:
             await message.channel.send(chatbot.get_response(message.content))
 
         elif "mekgorod" in message.content or "Mekgorod" in message.content:
             await message.channel.send("Quem ousa?")
-            channels.append(0)
+            permitedChannels.append(0)
             await asyncio.sleep(60)
-            channels.pop()
+            permitedChannels.pop()
             await message.channel.send("Não me pertube mais.")
 
     if message.author != client.user and ("servidor abrir" in message.content or "servidor voltar" in message.content):
