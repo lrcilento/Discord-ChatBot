@@ -6,3 +6,4 @@ nohup.out
 sentence_tokenizer.pickle
 corpora
 taggers
+start.sh

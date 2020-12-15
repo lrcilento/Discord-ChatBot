@@ -11,12 +11,13 @@ from credentials import db, token, bnet_cid, bnet_secret
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
+warnList = []
+realmStatus = ["Online"]
+
 permitedChannels = [781422176472924160]
 officerChannel = 382859094123610113
 announcementChannel = 339505925058723840
 realmID = 3209
-warnList = []
-realmStatus = ["Online"]
 
 logging.basicConfig(level=logging.INFO)
 
