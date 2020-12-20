@@ -3,7 +3,6 @@ import asyncio
 import os
 import discord
 from wowapi import WowApi
-from bs4 import BeautifulSoup
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from credentials import db, token, bnet_cid, bnet_secret
