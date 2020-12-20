@@ -44,7 +44,7 @@ async def on_ready():
         elif 'UP' in str(realm) and "Offline" in realmStatus:
             await client.get_channel(announcementChannel).send("O servidor voltou, pessoal!")
             for player in warnList:
-                player.send("O servidor voltou, bro, bora lá.")
+                await player.send("O servidor voltou, bro, bora lá.")
             warnList.clear()
             realmStatus.pop()
             realmStatus.append("Online")
@@ -57,14 +57,14 @@ async def on_member_join(member):
 
 @client.event
 async def on_member_remove(member):
-    await  client.get_channel(officerChannel).send("O " + member.display_name + " viadinho acabou de sair do servidor.")
+    await  client.get_channel(officerChannel).send("O " + member.display_name + " viadinho acabou de sair do servidor, deve ter ido dar.")
 
 @client.event
 async def on_member_update(before, after):
     if ("778819742928601109" not in str(before.roles)) and ("778819742928601109" in str(after.roles)):
         await after.send("Parabéns por ter sido aprovado na entrevista! Agora você é um dos trainees da Dagon! Não se esqueça de dar uma boa lida no #bem-vindo e muito boa sorte nas próximas etapas do processo!")
     elif ("382855295552061440" not in str(before.roles)) and ("382855295552061440" in str(after.roles)):
-        await after.send("Opa! Aí sim! Agora você é um titular da Dagon, meus parabéns! Quando tiver um tempo vamos conversar um pouco, quem sabe assim um dia eu fico menos estúpido.")
+        await after.send("Opa! Aí sim! Agora você é um titular da Dagon, meus parabéns! Quando tiver um tempo vamos conversar um pouco, é só me chamar pelo nome ou ir até o meu canal, quem sabe assim um dia eu fico menos estúpido.")
 
 @client.event
 async def on_message(message):
@@ -77,12 +77,23 @@ async def on_message(message):
                 warnList.append(message.author)
                 await message.channel.send("Pode deixar, mano.")
 
+    elif message.channel.id == officerChannel:
+
+        if "A new" in message.content:
+            aux = message.content.split()
+            link = aux[len(aux) - 1]
+            await message.delete()
+            await client.get_channel(officerChannel).send("Olha aí o arrombado querendo raidar com a gente: "+link)
+
+        if "application has been" in message.content:
+            await message.delete()
+
     elif message.author != client.user:
 
         if message.channel.id in permitedChannels:
             await message.channel.send(chatbot.get_response(message.content))
 
-        elif "mekgorod" in message.content or "Mekgorod" in message.content:
+        elif ("mekgorod" in message.content or "Mekgorod" in message.content) and message.channel not in permitedChannels:
             await message.channel.send("Quem ousa?")
             permitedChannels.append(message.channel)
             await asyncio.sleep(60)
