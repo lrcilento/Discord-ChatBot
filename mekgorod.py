@@ -4,7 +4,6 @@ import os
 import discord
 from wowapi import WowApi
 from chatterbot import ChatBot
-from chatterbot.trainers import ChatterBotCorpusTrainer
 from credentials import db, token, bnet_cid, bnet_secret
 
 intents = discord.Intents.default()
