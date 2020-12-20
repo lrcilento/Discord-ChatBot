@@ -80,8 +80,9 @@ async def on_message(message):
         if "A new" in message.content:
             aux = message.content.split()
             link = aux[len(aux) - 1]
+            role = aux[2]
             await message.delete()
-            await client.get_channel(officerChannel).send("Olha aí o arrombado querendo raidar com a gente: "+link)
+            await client.get_channel(officerChannel).send("Olha aí o "+role+" arrombado querendo raidar com a gente: "+link)
 
         if "application has been" in message.content:
             await message.delete()
