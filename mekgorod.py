@@ -67,7 +67,7 @@ async def on_member_update(before, after):
 @client.event
 async def on_message(message):
 
-    if message.content.startswith("!"):
+    if message.content.startswith("!") and message.channel.id in permitedChannels:
         await message.channel.send("Canal errado, animal, pra falar com outros bots chama eles pelo #geral.")
 
     elif message.author != client.user and ("servidor abrir" in message.content or "servidor voltar" in message.content):
