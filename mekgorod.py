@@ -23,13 +23,15 @@ chatbot = ChatBot(
     filters=["filters.get_recent_repeated_responses"]
 )
 
-async def checkServer():
+async def checkServer(offChecking):
     api = WowApi(bnet_cid, bnet_secret)
     realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
     if 'UP' not in str(realm) and "Online" in realmStatus:
         await client.get_channel(announcementChannel).send("Parace que o servidor caiu, pessoal, vou avisar aqui quando voltar, mas qualquer coisa podem pedir pra eu avisar por DM.")
         realmStatus.pop()
         realmStatus.append("Offline")
+        if offChecking:
+            return False
     elif 'UP' in str(realm) and "Offline" in realmStatus:
         await client.get_channel(announcementChannel).send("O servidor voltou, pessoal!")
         for player in warnList:
@@ -37,6 +39,10 @@ async def checkServer():
         warnList.clear()
         realmStatus.pop()
         realmStatus.append("Online")
+        if offChecking:
+            return False
+    elif offChecking:
+        return True
     if 'UP' not in str(realm):
         return False
     else:
@@ -46,7 +52,7 @@ async def checkServer():
 async def on_ready():
     timer = 600
     while True:
-        if await checkServer():
+        if await checkServer(False):
             timer = 600
         else:
             timer = 60
@@ -106,9 +112,9 @@ async def on_message(message):
                 await message.channel.send("Pode deixar, quando o servidor voltar eu te aviso.")
 
     elif message.author != client.user and ("!server" in message.content or "!realm" in message.content):
-        if await checkServer():
+        if await checkServer(True) and "Online" in realmStatus:
             await message.channel.send("Até onde sei está tudo em ordem com o servidor")
-        else:
+        elif await checkServer(True) and "Offline" in realmStatus:
             await message.channel.send("Parece que o servidor está com problemas mesmo, se quiser que eu te avise quando ele voltar ao normal é só pedir usando !remindme.")
 
     elif message.channel.id == officerChannel:
