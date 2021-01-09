@@ -1,4 +1,3 @@
-import logging
 import asyncio
 import os
 import discord
@@ -13,8 +12,6 @@ intents.members = True
 client = discord.Client(intents=intents)
 warnList = []
 realmStatus = ["Online"]
-
-logging.basicConfig(level=logging.INFO)
 
 chatbot = ChatBot(
     "Mekgorod",
