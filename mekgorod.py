@@ -85,7 +85,7 @@ async def on_message(message):
             link = aux[len(aux) - 1]
             role = aux[2]
             if role == "Death" or role == "Demon":
-                role = role + aux[3]
+                role += " "+aux[3]
             await message.delete()
             await client.get_channel(officerChannel).send("Olha aí o "+role+" arrombado querendo raidar com a gente: "+link)
 
