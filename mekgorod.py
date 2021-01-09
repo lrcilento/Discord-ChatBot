@@ -15,6 +15,7 @@ realmStatus = ["Online"]
 permitedChannels = [781422176472924160]
 officerChannel = 382859094123610113
 announcementChannel = 339505925058723840
+socialRoleID = 709005091927097354
 realmID = 3209
 
 logging.basicConfig(level=logging.INFO)
@@ -51,6 +52,8 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
+    await member.edit(nick = member.nick.lower().title())
+    await member.add_roles(client.get_role(socialRoleID))
     await member.send("Seja bem-vindo à Dagon! Caso tenha sido convidado por um dos oficiais entre em qualquer sala que eles já vão te puxar.")
 
 @client.event
