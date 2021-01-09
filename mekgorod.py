@@ -4,6 +4,7 @@ import os
 import discord
 from wowapi import WowApi
 from chatterbot import ChatBot
+from chatterbot.response_selection import get_most_frequent_response
 from credentials import db, token, bnet_cid, bnet_secret
 
 intents = discord.Intents.default()
@@ -26,6 +27,7 @@ logging.basicConfig(level=logging.INFO)
 
 chatbot = ChatBot(
     "Mekgorod",
+    response_selection_method=get_most_frequent_response,
     storage_adapter={
         'import_path': "chatterbot.storage.SQLStorageAdapter",
         'database_uri': db
