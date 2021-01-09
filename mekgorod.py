@@ -33,25 +33,33 @@ chatbot = ChatBot(
     filters=["filters.get_recent_repeated_responses"]
 )
 
+async def checkServer():
+    api = WowApi(bnet_cid, bnet_secret)
+    realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
+    if 'UP' not in str(realm) and "Online" in realmStatus:
+        await client.get_channel(announcementChannel).send("Parace que o servidor caiu, pessoal, vou avisar aqui quando voltar, mas qualquer coisa podem pedir pra eu avisar por DM.")
+        realmStatus.pop()
+        realmStatus.append("Offline")
+    elif 'UP' in str(realm) and "Offline" in realmStatus:
+        await client.get_channel(announcementChannel).send("O servidor voltou, pessoal!")
+        for player in warnList:
+            await player.send("O servidor voltou, bro, bora lá.")
+        warnList.clear()
+        realmStatus.pop()
+        realmStatus.append("Online")
+    if 'UP' not in str(realm):
+        return False
+    else:
+        return True
+
 @client.event
 async def on_ready():
-    api = WowApi(bnet_cid, bnet_secret)
     timer = 600
     while True:
-        realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
-        if 'UP' not in str(realm) and "Online" in realmStatus:
-            await client.get_channel(announcementChannel).send("Parace que o servidor caiu, pessoal, vou avisar aqui quando voltar, mas qualquer coisa podem pedir pra eu avisar por DM.")
-            realmStatus.pop()
-            realmStatus.append("Offline")
-            timer = 60
-        elif 'UP' in str(realm) and "Offline" in realmStatus:
-            await client.get_channel(announcementChannel).send("O servidor voltou, pessoal!")
-            for player in warnList:
-                await player.send("O servidor voltou, bro, bora lá.")
-            warnList.clear()
-            realmStatus.pop()
-            realmStatus.append("Online")
+        if checkServer():
             timer = 600
+        else:
+            timer = 60
         await asyncio.sleep(timer)
 
 @client.event
@@ -77,7 +85,7 @@ async def on_message(message):
     if message.content.startswith("!") and message.channel.id in permitedChannels:
         await message.channel.send("Canal errado, bro, pra falar com outros bots chama eles pelo #geral.")
 
-    elif message.content.startswith("prune"):
+    elif message.content.startswith("!prune"):
         if message.guild.get_role(guildMasterRoleID) in message.author.roles:
             try:
                 amount = int(message.content.split()[1])
@@ -99,13 +107,19 @@ async def on_message(message):
                 else:
                     await member.send("**Nova mensagem no #avisos!**\nCheca lá porque ela tem algum anexo que não consigo enviar por aqui.")
 
-    elif message.author != client.user and ("servidor abrir" in message.content or "servidor voltar" in message.content):
+    elif message.author != client.user and ("!remind" in message.content or "!remindme" in message.content):
 
             if "Online" in realmStatus:
                 await message.channel.send("Como assim, mano? O server tá aberto.")
             else:
                 warnList.append(message.author)
                 await message.channel.send("Pode deixar, mano.")
+
+    elif message.author != client.user and ("!server" in message.content or "!realm" in message.content):
+        if checkServer():
+            await message.channel.send("Até onde sei está tudo em ordem com o servidor")
+        else:
+            await message.channel.send("Parece que o servidor está com problemas mesmo, se quiser que eu te avise quando ele voltar ao normal é só pedir usando !remindme.")
 
     elif message.channel.id == officerChannel:
 
