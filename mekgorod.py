@@ -15,7 +15,11 @@ realmStatus = ["Online"]
 permitedChannels = [781422176472924160]
 officerChannel = 382859094123610113
 announcementChannel = 339505925058723840
+warnChannel = 722604230434619462
+guildMasterRoleID = 339507321506103296
+raiderRoleID = 382855295552061440
 socialRoleID = 709005091927097354
+WCLogsWebHookID = 786136417457274931
 realmID = 3209
 
 logging.basicConfig(level=logging.INFO)
@@ -53,7 +57,7 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     await member.edit(nick = member.display_name.lower().title())
-    await member.add_roles(client.get_role(socialRoleID))
+    await member.add_roles(member.guild.get_role(socialRoleID))
     await member.send("Seja bem-vindo à Dagon! Caso tenha sido convidado por um dos oficiais entre em qualquer sala que eles já vão te puxar.")
 
 @client.event
@@ -72,6 +76,28 @@ async def on_message(message):
 
     if message.content.startswith("!") and message.channel.id in permitedChannels:
         await message.channel.send("Canal errado, bro, pra falar com outros bots chama eles pelo #geral.")
+
+    elif message.content.startswith("prune"):
+        if message.guild.get_role(guildMasterRoleID) in message.author.roles:
+            try:
+                amount = int(message.content.split()[1])
+                await message.channel.purge(limit = amount)
+            except:
+                await message.channel.send("Uso incorreto do comando prune, por favor verifique a sintaxe.")
+        else:
+            await message.channel.send("Você não tem permissão para usar o comando prune.")
+
+    elif message.author.id == WCLogsWebHookID:
+        await message.channel.send(f"Logs de hoje, {message.guild.get_role(raiderRoleID).mention}:\n"+message.embeds[0].url)
+        await message.delete()
+
+    elif message.channel.id == warnChannel:
+        for member in message.guild.members:
+            if message.guild.get_role(raiderRoleID) in member.roles:
+                if len(message.embeds) == 0 and len(message.attachments) == 0:
+                    await member.send("**Nova mensagem no #avisos!**\n\n"+message.content)
+                else:
+                    await member.send("**Nova mensagem no #avisos!**\nCheca lá porque ela tem algum anexo que não consigo enviar por aqui.")
 
     elif message.author != client.user and ("servidor abrir" in message.content or "servidor voltar" in message.content):
 
@@ -92,7 +118,10 @@ async def on_message(message):
             await message.delete()
             await client.get_channel(officerChannel).send("Olha aí o "+role+" arrombado querendo raidar com a gente: "+link)
 
-        if "application has been" in message.content:
+        elif "application has been" in message.content:
+            await message.channel.purge(limit = 2)
+
+        elif "application" in message.content:
             await message.delete()
 
     elif message.author != client.user:
