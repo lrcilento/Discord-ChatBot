@@ -5,23 +5,14 @@ import discord
 from wowapi import WowApi
 from chatterbot import ChatBot
 from chatterbot.response_selection import get_most_frequent_response
-from credentials import db, token, bnet_cid, bnet_secret
+from credentials import *
+from config import *
 
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 warnList = []
 realmStatus = ["Online"]
-
-permitedChannels = [781422176472924160]
-officerChannel = 382859094123610113
-announcementChannel = 339505925058723840
-warnChannel = 722604230434619462
-guildMasterRoleID = 339507321506103296
-raiderRoleID = 382855295552061440
-socialRoleID = 709005091927097354
-WCLogsWebHookID = 786136417457274931
-realmID = 3209
 
 logging.basicConfig(level=logging.INFO)
 
