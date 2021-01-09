@@ -52,7 +52,7 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    await member.edit(nick = member.nick.lower().title())
+    await member.edit(nick = member.display_name.lower().title())
     await member.add_roles(client.get_role(socialRoleID))
     await member.send("Seja bem-vindo à Dagon! Caso tenha sido convidado por um dos oficiais entre em qualquer sala que eles já vão te puxar.")
 
