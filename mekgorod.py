@@ -56,7 +56,7 @@ async def checkServer():
 async def on_ready():
     timer = 600
     while True:
-        if checkServer():
+        if await checkServer():
             timer = 600
         else:
             timer = 60
@@ -89,7 +89,7 @@ async def on_message(message):
         if message.guild.get_role(guildMasterRoleID) in message.author.roles:
             try:
                 amount = int(message.content.split()[1])
-                await message.channel.purge(limit = amount)
+                await message.channel.purge(limit = amount + 1)
             except:
                 await message.channel.send("Uso incorreto do comando prune, por favor verifique a sintaxe.")
         else:
@@ -110,13 +110,13 @@ async def on_message(message):
     elif message.author != client.user and ("!remind" in message.content or "!remindme" in message.content):
 
             if "Online" in realmStatus:
-                await message.channel.send("Como assim, mano? O server tá aberto.")
+                await message.channel.send("Não sei do que está falando, aqui pra mim o servidor está aberto.")
             else:
                 warnList.append(message.author)
-                await message.channel.send("Pode deixar, mano.")
+                await message.channel.send("Pode deixar, quando o servidor voltar eu te aviso.")
 
     elif message.author != client.user and ("!server" in message.content or "!realm" in message.content):
-        if checkServer():
+        if await checkServer():
             await message.channel.send("Até onde sei está tudo em ordem com o servidor")
         else:
             await message.channel.send("Parece que o servidor está com problemas mesmo, se quiser que eu te avise quando ele voltar ao normal é só pedir usando !remindme.")
