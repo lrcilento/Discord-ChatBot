@@ -1,10 +1,8 @@
 import asyncio
 import os
 import discord
-from wowapi import WowApi
-from chatterbot import ChatBot
-from chatterbot.response_selection import get_most_frequent_response
-from credentials import *
+from blizzardapi import BlizzardApi
+from credentials import bnet_cid, bnet_secret, token
 from config import *
 
 intents = discord.Intents.default()
@@ -13,19 +11,9 @@ client = discord.Client(intents=intents)
 warnList = []
 realmStatus = ["Online"]
 
-chatbot = ChatBot(
-    "Mekgorod",
-    response_selection_method=get_most_frequent_response,
-    storage_adapter={
-        'import_path': "chatterbot.storage.SQLStorageAdapter",
-        'database_uri': db
-    },
-    filters=["filters.get_recent_repeated_responses"]
-)
-
 async def checkServer(offChecking):
-    api = WowApi(bnet_cid, bnet_secret)
-    realm = api.get_connected_realm(region='us', namespace='dynamic-us', locale='pt_BR', id=realmID)
+    api = BlizzardApi(bnet_cid, bnet_secret)
+    realm = api.wow.game_data.get_connected_realm(region='us', locale='pt_BR', connected_realm_id=realmID)
     if 'UP' not in str(realm) and "Online" in realmStatus:
         await client.get_channel(announcementChannel).send("Parace que o servidor caiu, pessoal, vou avisar aqui quando voltar, mas qualquer coisa podem pedir pra eu avisar por DM.")
         realmStatus.pop()
@@ -73,13 +61,18 @@ async def on_member_update(before, after):
     if ("778819742928601109" not in str(before.roles)) and ("778819742928601109" in str(after.roles)):
         await after.send("Parabéns por ter sido aprovado na entrevista! Agora você é um dos trainees da Dagon! Não se esqueça de dar uma boa lida no #bem-vindo e muito boa sorte nas próximas etapas do processo!")
     elif ("382855295552061440" not in str(before.roles)) and ("382855295552061440" in str(after.roles)):
-        await after.send("Opa! Aí sim! Agora você é um titular da Dagon, meus parabéns! Quando tiver um tempo vamos conversar um pouco, é só me chamar pelo nome ou ir até o meu canal, quem sabe assim um dia eu fico menos estúpido.")
+        await after.send("Opa! Aí sim! Agora você é um titular da Dagon, meus parabéns!")
 
 @client.event
 async def on_message(message):
 
     if message.content.startswith("!") and message.channel.id in permitedChannels:
         await message.channel.send("Canal errado, bro, pra falar com outros bots chama eles pelo #geral.")
+
+    elif message.content.startswith("!help"):
+        await message.channel.send("?")
+
+    # Comando '!prune':
 
     elif message.content.startswith("!prune"):
         if message.guild.get_role(guildMasterRoleID) in message.author.roles:
@@ -91,9 +84,13 @@ async def on_message(message):
         else:
             await message.channel.send("Você não tem permissão para usar o comando prune.")
 
+    # Aviso de logs:
+
     elif message.author.id == WCLogsWebHookID:
         await message.channel.send(f"Logs de hoje, {message.guild.get_role(raiderRoleID).mention}:\n"+message.embeds[0].url)
         await message.delete()
+
+    # Aviso de avisos:
 
     elif message.channel.id == warnChannel:
         for member in message.guild.members:
@@ -102,6 +99,8 @@ async def on_message(message):
                     await member.send("**Nova mensagem no #avisos!**\n\n"+message.content)
                 else:
                     await member.send("**Nova mensagem no #avisos!**\nCheca lá porque ela tem algum anexo que não consigo enviar por aqui.")
+
+    # Aviso de queda/retorno do servidor:
 
     elif message.author != client.user and ("!remind" in message.content or "!remindme" in message.content):
 
@@ -116,6 +115,8 @@ async def on_message(message):
             await message.channel.send("Até onde sei está tudo em ordem com o servidor")
         elif await checkServer(True) and "Offline" in realmStatus:
             await message.channel.send("Parece que o servidor está com problemas mesmo, se quiser que eu te avise quando ele voltar ao normal é só pedir usando !remindme.")
+
+    # Aviso de apply:
 
     elif message.channel.id == officerChannel:
 
@@ -133,17 +134,5 @@ async def on_message(message):
 
         elif "application" in message.content:
             await message.delete()
-
-    elif message.author != client.user:
-
-        if message.channel.id in permitedChannels:
-            await message.channel.send(chatbot.get_response(message.content))
-
-        elif ("mekgorod" in message.content or "Mekgorod" in message.content) and message.channel not in permitedChannels:
-            await message.channel.send("Quem ousa?")
-            permitedChannels.append(message.channel)
-            await asyncio.sleep(60)
-            permitedChannels.pop()
-            await message.channel.send("Não me pertube mais.")
 
 client.run(token)
