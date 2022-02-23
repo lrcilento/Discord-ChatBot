@@ -1,6 +1,7 @@
 import asyncio
 import os
 import discord
+import time
 from blizzardapi import BlizzardApi
 from credentials import bnet_cid, bnet_secret, token
 from config import *
@@ -9,7 +10,10 @@ intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 warnList = []
+mutedPeople = []
 realmStatus = ["Online"]
+
+helpString = "!prune [int]: Apaga um número (int) de mensagens do canal\n!mute [userID]: Impede um usuário (userID) de mandar mensagens\n!unmute [userID]: Desmuta um jogador previamente mutado\n!realm ou !server: Checa se o servidor está online\n!remind ou !remindme: Avisa quando o servidor voltar, caso esteja offline"
 
 async def checkServer(offChecking):
     api = BlizzardApi(bnet_cid, bnet_secret)
@@ -38,6 +42,7 @@ async def checkServer(offChecking):
 
 @client.event
 async def on_ready():
+    print("Who dares to summons me?!")
     timer = 600
     while True:
         if await checkServer(False):
@@ -46,18 +51,55 @@ async def on_ready():
             timer = 60
         await asyncio.sleep(timer)
 
+"""
+@client.event
+async def on_voice_state_update(member, before, after):
+
+    # Seguir seu mestre nos canais de voz
+
+    if member.guild.get_role(guildMasterRoleID) in member.roles:
+
+        if before.channel != after.channel:
+
+            if after.channel is not None:
+                try:
+                    time.sleep(1)
+                    await after.channel.connect()
+                except:
+                    time.sleep(1)
+                    await member.guild.voice_client.disconnect()
+                    try:
+                        time.sleep(1)
+                        await after.channel.connect()
+                    except:
+                       pass
+
+            else:
+                time.sleep(1)
+                await member.guild.voice_client.disconnect()
+"""
+
 @client.event
 async def on_member_join(member):
+
+    # Correção de nome e boas-vindas:
+
     await member.edit(nick = member.display_name.lower().title())
     await member.add_roles(member.guild.get_role(socialRoleID))
     await member.send("Seja bem-vindo à Dagon! Caso tenha sido convidado por um dos oficiais entre em qualquer sala que eles já vão te puxar.")
 
 @client.event
 async def on_member_remove(member):
+
+    # Aviso de saída do servidor:
+
     await  client.get_channel(officerChannel).send("O " + member.display_name + " viadinho acabou de sair do servidor, deve ter ido dar.")
 
 @client.event
 async def on_member_update(before, after):
+
+    # Congratulações de avanço de cargo:
+
     if ("778819742928601109" not in str(before.roles)) and ("778819742928601109" in str(after.roles)):
         await after.send("Parabéns por ter sido aprovado na entrevista! Agora você é um dos trainees da Dagon! Não se esqueça de dar uma boa lida no #bem-vindo e muito boa sorte nas próximas etapas do processo!")
     elif ("382855295552061440" not in str(before.roles)) and ("382855295552061440" in str(after.roles)):
@@ -66,11 +108,21 @@ async def on_member_update(before, after):
 @client.event
 async def on_message(message):
 
-    if message.content.startswith("!") and message.channel.id in permitedChannels:
+    # Proteção contra usuários mutados:
+
+    if str(message.author) in mutedPeople:
+        await message.delete()
+
+    # Aviso de canal errado:
+
+    elif message.content.startswith("!") and message.channel.id in permitedChannels:
         await message.channel.send("Canal errado, bro, pra falar com outros bots chama eles pelo #geral.")
 
+    # Listar comandos disponíveis:
+
     elif message.content.startswith("!help"):
-        await message.channel.send("?")
+        if message.guild.get_role(guildMasterRoleID) in message.author.roles:
+            await message.author.send(helpString)
 
     # Comando '!prune':
 
@@ -83,6 +135,42 @@ async def on_message(message):
                 await message.channel.send("Uso incorreto do comando prune, por favor verifique a sintaxe.")
         else:
             await message.channel.send("Você não tem permissão para usar o comando prune.")
+
+    # Comando '!mute':
+
+    elif message.content.startswith("!mute"):
+        if message.guild.get_role(guildMasterRoleID) in message.author.roles:
+            try:
+                user = message.content.split()[1]
+                mutedPeople.append(user)
+                await message.channel.send("Feito.")
+                user.send("Você está temporariamente mutado nesse serividor, em caso de dúvidas procure o Sinclaire.")
+            except:
+                await message.channel.send("Uso incorreto do comando prune, por favor verifique a sintaxe.")
+        else:
+            await message.channel.send("Você não tem permissão para usar o comando prune.")
+
+    # Comando '!unmute':
+
+    elif message.content.startswith("!unmute"):
+        if message.guild.get_role(guildMasterRoleID) in message.author.roles:
+            try:
+                user = message.content.split()[1]
+                if user in mutedPeople:
+                    mutedPeople.remove(user)
+                    await message.channel.send("Não concordo, mas tudo bem...")
+                else:
+                    await message.channel.send("O jogador selecionado não está mutado.")
+            except:
+                await message.channel.send("Uso incorreto do comando prune, por favor verifique a sintaxe.")
+        else:
+            await message.channel.send("Você não tem permissão para usar o comando prune.")
+
+    # Proteção contra TikTok:
+
+    elif "tiktok" in message.content or "tiktuk" in message.content:
+        await message.delete()
+        await message.author.send("É proibida qualquer referência ao TikTok nesse servidor, por favor comporte-se.")
 
     # Aviso de logs:
 
@@ -127,12 +215,6 @@ async def on_message(message):
             if role == "Death" or role == "Demon":
                 role += " "+aux[3]
             await message.delete()
-            await client.get_channel(officerChannel).send("Olha aí o "+role+" arrombado querendo raidar com a gente: "+link)
-
-        elif "application has been" in message.content:
-            await message.channel.purge(limit = 2)
-
-        elif "application" in message.content:
-            await message.delete()
+            await client.get_channel(officerChannel).send("Olha aí o "+role+" querendo raidar com a gente: "+link)
 
 client.run(token)
